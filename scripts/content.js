@@ -85,3 +85,15 @@ function watchFor(selector, onFound) {
   });
   mo.observe(document.documentElement, { childList: true, subtree: true });
 }
+
+const domain = window.location.origin;
+const current_page = window.location.pathname;
+
+let assignments = [];
+fetch(`${domain}/api/v1/courses/544016/activity_stream/summary`, {
+  method: "GET",
+  credentials: "include"
+})
+  .then(resp => resp.json())
+  .then(data => {console.log("fetched data:", data)})
+  .catch(err => console.error("Error:", err));
