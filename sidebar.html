@@ -1,13 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Sidepanel</title>
-    <style>
-        body { font-family: sans-serif; padding: 15px; }
-    </style>
+  <title>FocusFlow Assistant</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fcfcfc;
+      color: #111827;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #e36f10;
+    }
+    .status {
+      background: #e0f2fe;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    button {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background-color: #1d4ed8;
+    }
+  </style>
 </head>
 <body>
-<h1>Hello from my sidebar!</h1>
-<p>This UI is persistent and doesn't reload when you navigate between tabs.</p>
+  <h1>FocusFlow</h1>
+  <div class="status" id="status"> Integrity Mode Active! </div>
+  <button id="focusCheck">Check Focus</button>
+  <button id="reflectBtn">Reflection Prompt</button>
+
+  <p id="feedback" style="margin-top:10px;"></p>
+
+  <script src="sidebar.js"></script>
 </body>
 </html>
+
