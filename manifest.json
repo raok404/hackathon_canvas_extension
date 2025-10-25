@@ -27,5 +27,11 @@
     "permissions": ["sidePanel","storage", "activeTab", "scripting"],
     "side_panel": {
         "default_path": "sidebar.html"
+    },
+    "web_accessible_resources": [
+    {
+    "resources": ["sidebar.html"],
+    "matches": ["<all_urls>"]
     }
+]
 }
