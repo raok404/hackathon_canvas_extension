@@ -1,13 +1,25 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-    <title>My Sidepanel</title>
+    <meta charset="utf-8" />
+    <title>Canvas Sidebar</title>
     <style>
-        body { font-family: sans-serif; padding: 15px; }
+        body { margin:0; font: 13px system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+        .wrap { padding: 12px; max-height: 100vh; overflow: auto; }
+        .row { padding:10px 8px; border-bottom:1px solid #eee; }
+        .title { font-weight:600; }
+        .meta { color:#666; font-size:12px; margin-top:2px; }
+        .topbar { display:flex; gap:8px; align-items:center; padding:8px; position:sticky; top:0; background:#fff; border-bottom:1px solid #eee; z-index:1; }
+        button { padding:6px 10px; }
     </style>
 </head>
 <body>
-<h1>Hello from my sidebar!</h1>
-<p>This UI is persistent and doesn't reload when you navigate between tabs.</p>
+<div class="topbar">
+    <button id="refreshBtn">Refresh</button>
+    <span id="lastSync" class="meta"></span>
+    <a href="options.html" target="_blank" style="margin-left:auto;">Settings</a>
+</div>
+<div class="wrap" id="list"></div>
+<script src="sidebar.js"></script>
 </body>
 </html>
