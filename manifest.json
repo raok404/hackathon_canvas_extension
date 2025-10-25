@@ -12,7 +12,8 @@
     "content_scripts": [
         {
             "js": ["scripts/content.js"],
-            "matches": ["https://*.instructure.com/"]
+            "matches": ["https://*.instructure.com/"],
+            "run_at": "document_idle"
         }
     ],
     "action": {
