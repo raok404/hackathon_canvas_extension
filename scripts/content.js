@@ -136,9 +136,25 @@ async function saveClasses(){
 saveClasses()
 
 async function saveAllAssignments(){
-  allList = [];
+  let allList = [];
+  let doneList = [];
+  let notDoneList = [];
+
+  //logic for counting points
+  let countOntime = 0;
+  let countEarly = 0;
+  let countSuperEarly = 0;
+  const today = new Date().toISOString();
+
+  let prevDone = await chrome.storage.local.get("completeAssignments");
+  prevDone = prevDone.completeAssignments;
+  let prevNotDone = await chrome.storage.local.get("incompleteAssignments");
+  prevNotDone = prevNotDone.incompleteAssignments;
+  console.log(prevDone)
+
   classList = await chrome.storage.local.get("classes");
   console.log(classList);
+
   for (const subList of classList.classes) {
     items = await getData(`/api/v1/courses/${subList[0]}/assignment_groups?include[]=assignments&include[]=submission`);
 
@@ -147,19 +163,41 @@ async function saveAllAssignments(){
       assignmentList = group.assignments
       assignmentList.forEach((assignment)=>{
         //console.log("   ", assignment.name);
-        allList.push([assignment.course_id,
-          assignment.name, // assignment name (ex exam 1, unit 3 quiz)
-          group.name, //category name (ex exam, quiz, lab)
-          assignment.due_at,
-          assignment.points_possible,
-          assignment.html_url,
-          assignment.submission.workflow_state]);
+      const assignmentInfo = [assignment.course_id,
+        assignment.name, // assignment name (ex exam 1, unit 3 quiz)
+        group.name, //category name (ex exam, quiz, lab)
+        assignment.due_at, //due date=time
+        assignment.points_possible, //how many pts the assignment is worth
+        assignment.html_url,//can give user a link to the assingment!
+        assignment.submission.workflow_state];//did they submit yet
+
+      allList.push(assignmentInfo);
+      
+      if (assignment.submission.workflow_state == "unsubmitted") {
+        notDoneList.push(assignmentInfo);
+      }
+      else {
+        doneList.push(assignmentInfo);
+      }
+
       });
     });
   };
 
-  chrome.storage.local.set({allAssignments: allList});
-  console.log("stored", allList)//debugging
+  for (const assignment of prevNotDone){
+    for (const doneAssignment of allList) {//for debugging. change to doneList when ready
+      if ((assignment[1] == doneAssignment[1]) && (assignment[0] == doneAssignment[0])) {
+        countEarly += 1;
+      }
+    }
+  }
+
+  console.log(countEarly);
+
+  chrome.storage.local.set({allAssignments: allList}); //may not need this??
+  chrome.storage.local.set({incompleteAssignments: notDoneList});
+  chrome.storage.local.set({completeAssignments: doneList});
+  console.log("stored")//debugging
 }
 
 saveAllAssignments()
