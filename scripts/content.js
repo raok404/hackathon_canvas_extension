@@ -90,10 +90,75 @@ const domain = window.location.origin;
 const current_page = window.location.pathname;
 
 let assignments = [];
-fetch(`${domain}/api/v1/courses/544016/activity_stream/summary`, {
-  method: "GET",
-  credentials: "include"
-})
-  .then(resp => resp.json())
-  .then(data => {console.log("fetched data:", data)})
-  .catch(err => console.error("Error:", err));
+
+async function getData(endpoint) {
+  try {
+    const resp = await fetch(endpoint, { 
+      method: "GET", 
+      credentials: "include" // ensures Canvas session cookies are sent
+    });
+
+    if (!resp.ok) {
+      console.error("Request failed:", resp.status, resp.statusText);
+      return null;
+    }
+
+    const data = await resp.json();
+    return data;
+
+  } catch (err) {
+    console.error("Fetch error:", err);
+    return null;
+  }
+}
+
+
+async function saveClasses(){
+  //updates "classes" - a dict of the course_id as the key and "text" course name as value
+  data = await getData("/api/v1/users/self/todo");
+  let course_id_array = []
+  data.forEach((element)=> {
+    course_id_array.push(element.course_id)
+    console.log("added", element.course_id, "in array")
+  });
+
+  classes_array = [];
+  data2 = await getData("/api/v1/users/self/courses?enrollment_state=active&per_page=30")
+  data2.forEach((element)=> {
+    if (course_id_array.includes(element.id)) {
+      classes_array.push([element.id, element.course_code]); //could also try .name if you want the whole name
+    }
+  });
+  chrome.storage.local.set({classes: classes_array});
+  console.log("stored", classes_array)
+}
+
+saveClasses()
+
+async function saveToDo(){
+  todoList = [];
+
+  items = await getData("/api/v1/courses/542125/assignment_groups?include[]=assignments");
+  items.forEach((element)=> {
+    //context-type??
+    //if it's an assignment and not submitted yet
+    //each assignment gets saved in [course id, assignment name, due date, points possible]
+    // if (element.plannable_type == "assignment" && !element.submissions.submitted){
+    //   todoList.push([element.course_id, 
+    //     element.plannable.title, 
+    //     element.plannable.due_at, 
+    //     element.plannable.points_possible]);
+
+    //     console.log(element.plannable.title);
+    // }
+    console.log(element.name);
+    assignmentList = element.assignments
+    assignmentList.forEach((assignment)=>{
+      console.log("   ", assignment.name);
+    });
+  });
+  console.log(todoList);
+}
+
+saveToDo()
+
