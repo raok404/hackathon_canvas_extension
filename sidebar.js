@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
     feedback.innerText = `${random}`;
   });
 
-
   if (typeof chrome !== "undefined" && chrome.storage) {
     chrome.storage.local.get("points", (data) => {
       const totalPoints = data.points || 0;
@@ -84,8 +83,8 @@ document.addEventListener("DOMContentLoaded", () => {
       chrome.storage.local.get("points", (data) => {
         const total = (data.points || 0) + points;
         chrome.storage.local.set({ points: total }, () => {
-          document.getElementById(`points-${id}`).innerText = `${total} pts total`;
-          feedback.innerText = `You earned ${points} point${points > 1 ? "s" : ""}!`;
+          document.getElementById(`points-${id}`).innerText = ` ${total} pts total`;
+          feedback.innerText = ` You earned ${points} point${points > 1 ? "s" : ""}!`;
           updateProgress(total);
         });
       });
@@ -98,28 +97,56 @@ document.addEventListener("DOMContentLoaded", () => {
     progressLabel.innerText = `${totalPoints} / ${WEEKLY_GOAL} Points`;
   }
 
+
   let timerActive = false;
+  let timerInterval;
+
   timerBtn.addEventListener("click", () => {
     if (timerActive) return;
     timerActive = true;
+
+    // const totalSeconds = 45 * 60;
+    const totalSeconds = 5; // quick test
+    let remaining = totalSeconds;
+    const timerDisplay = document.getElementById("focusTimer");
+
     feedback.innerText = "⏱ Focus session started (45 min)...";
 
+    const alarm = new Audio(chrome.runtime.getURL("cardinal-37075.mp3"));
+    alarm.volume = 0.7;
+    alarm.load();
 
-    setTimeout(() => {
-      timerActive = false;
-      feedback.innerText = "Session complete! +1 point earned.";
+    function updateDisplay() {
+      const mins = Math.floor(remaining / 60);
+      const secs = remaining % 60;
+      timerDisplay.innerText = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    }
 
-      if (typeof chrome !== "undefined" && chrome.storage) {
-        chrome.storage.local.get(["points"], (data) => {
-          const total = (data?.points || 0) + 1;
-          chrome.storage.local.set({ points: total }, () => {
-            updateProgress(total);
+    updateDisplay();
+
+    timerInterval = setInterval(() => {
+      remaining--;
+      updateDisplay();
+
+      if (remaining <= 0) {
+        clearInterval(timerInterval);
+        timerDisplay.innerText = "00:00";
+        timerActive = false;
+        feedback.innerText = "Session complete! +1 point earned.";
+
+        alarm.play().catch(() => console.log("Audio play blocked by browser."));
+
+        if (typeof chrome !== "undefined" && chrome.storage) {
+          chrome.storage.local.get(["points"], (data) => {
+            const total = (data?.points || 0) + 1;
+            chrome.storage.local.set({ points: total }, () => {
+              updateProgress(total);
+            });
           });
-        });
+        }
       }
-    }, 5000);
+    }, 1000);
   });
-
 
   let hidden = false;
   distractionBtn.addEventListener("click", () => {
@@ -145,8 +172,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     feedback.innerText = hidden ? "Distractions hidden!" : "Distractions visible.";
   });
-
-
 
   if (typeof chrome !== "undefined" && chrome.storage) {
     chrome.storage.local.get("theme", (data) => {

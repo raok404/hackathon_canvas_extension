@@ -15,7 +15,7 @@
     }
 
     h1 {
-      color: #b35009;
+      color: #f97316;
       text-align: center;
       margin-bottom: 6px;
       font-size: 22px;
@@ -104,7 +104,6 @@
     .todo-date { font-size: 12px; color: #475569; margin-bottom: 6px; }
     .points { font-size: 12px; color: #f59e0b; font-weight: 600; }
 
-
     .tip {
       background: #fef9c3;
       border-radius: 10px;
@@ -115,7 +114,6 @@
       margin-top: 10px;
       text-align: center;
     }
-
 
     .dark-mode {
       background-color: #0f172a;
@@ -134,7 +132,7 @@
 </head>
 
 <body>
-  <h1>  Early Bird 🦜</h1>
+  <h1>Early Bird</h1>
   <div class="status" id="status">🪶 Early Bird Mode Active!</div>
 
   <div class="button-group">
@@ -145,18 +143,28 @@
   </div>
 
   <div style="text-align:center;">
-    <button id="themeToggle">🌞 / 🌜</button>
+    <button id="themeToggle">🌞 / 🌛</button>
   </div>
 
   <p id="feedback" style="text-align:center;"></p>
 
   <hr>
 
-  <h2 style="text-align:center;color:#b35009;">This Week's Progress</h2>
+  <h2 style="text-align:center;color:#f97316;">Focus Timer</h2>
+  <div id="focusTimer" style="
+    text-align:center;
+    font-size:24px;
+    font-weight:600;
+    color:#1e293b;
+    margin-bottom:12px;">
+    45:00
+  </div>
+
+  <h2 style="text-align:center;color:#f97316;">This Week's Progress</h2>
   <div class="progress-label" id="progressLabel">0 / 15 Points</div>
   <div class="progress-container"><div class="progress-fill" id="progressFill"></div></div>
 
-  <h2 style="text-align:center;color:#b35009;">Assignments This Week</h2>
+  <h2 style="text-align:center;color:#f97316;">Assignments This Week</h2>
   <div id="todoList"></div>
 
   <div class="tip" id="dailyTip"></div>
