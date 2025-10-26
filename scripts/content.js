@@ -86,10 +86,7 @@ function watchFor(selector, onFound) {
   mo.observe(document.documentElement, { childList: true, subtree: true });
 }
 
-const domain = window.location.origin;
-const current_page = window.location.pathname;
-
-let assignments = [];
+let assignments = [];//
 
 async function getData(endpoint) {
   try {
@@ -116,89 +113,82 @@ async function getData(endpoint) {
 async function saveClasses(){
   //updates "classes" - a nested list of the course_id and "text" course name
   data = await getData("/api/v1/users/self/todo");
-  let course_id_array = []
+  let course_id_array = [] //array of active course ids
   data.forEach((element)=> {
     course_id_array.push(element.course_id)
     console.log("added", element.course_id, "in array")//debugging
   });
 
-  classes_array = [];
+  classes_dict = {};
   data2 = await getData("/api/v1/users/self/courses?enrollment_state=active&per_page=30")
   data2.forEach((element)=> {
     if (course_id_array.includes(element.id)) {
-      classes_array.push([element.id, element.course_code]); //could also try .name if you want the whole name
+      classes_dict[element.id] = element.course_code; //could also try .name if you want the whole name
     }
   });
-  chrome.storage.local.set({classes: classes_array});
-  console.log("stored", classes_array)//debugging
+  chrome.storage.local.set({classes: classes_dict});
+  console.log("stored", classes_dict)//debugging
 }
 
 saveClasses()
 
 async function saveAllAssignments(){
-  let allList = [];
-  let doneList = [];
-  let notDoneList = [];
-
   //logic for counting points
   let countOntime = 0;
   let countEarly = 0;
   let countSuperEarly = 0;
   const today = new Date().toISOString();
 
-  let prevDone = await chrome.storage.local.get("completeAssignments");
-  prevDone = prevDone.completeAssignments;
-  let prevNotDone = await chrome.storage.local.get("incompleteAssignments");
-  prevNotDone = prevNotDone.incompleteAssignments;
-  console.log(prevDone)
+  classDict = await chrome.storage.local.get("classes");
+  console.log(classDict);
 
-  classList = await chrome.storage.local.get("classes");
-  console.log(classList);
+  storedAssignments = await chrome.storage.local.get("assignments") || {};
+  console.log(storedAssignments);
 
-  for (const subList of classList.classes) {
-    items = await getData(`/api/v1/courses/${subList[0]}/assignment_groups?include[]=assignments&include[]=submission`);
+  let assignmentWeights = {};
+  let assignmentList = [];
 
-    items.forEach((group)=> {
+  for (const [courseID, courseName] of Object.entries(classDict)) {
+    let assignmentGroups = await getData(`/api/v1/courses/${courseID}/assignment_groups?include[]=assignments&include[]=submission`);
+    assignmentGroups = assignmentGroups.
+    assignmentWeights[courseID] = {}
+
+    assignmentGroups.forEach((group)=> {
       //console.log(element.name);
-      assignmentList = group.assignments
-      assignmentList.forEach((assignment)=>{
-        //console.log("   ", assignment.name);
-      const assignmentInfo = [assignment.course_id,
-        assignment.name, // assignment name (ex exam 1, unit 3 quiz)
-        group.name, //category name (ex exam, quiz, lab)
-        assignment.due_at, //due date=time
-        assignment.points_possible, //how many pts the assignment is worth
-        assignment.html_url,//can give user a link to the assingment!
-        assignment.submission.workflow_state];//did they submit yet
+      //assignment weights for each group
+      assignmentWeights[courseID].name = group.group_weight;
 
-      allList.push(assignmentInfo);
-      
-      if (assignment.submission.workflow_state == "unsubmitted") {
-        notDoneList.push(assignmentInfo);
+      assignmentIterator = group.assignments
+      assignmentIterator.forEach((assignment)=>{
+        //console.log("   ", assignment.name);
+      const assignmentInfo = {
+        course: assignment.course_id,
+        name: assignment.name, // assignment name (ex exam 1, unit 3 quiz)
+        category: group.name, //category name (ex exam, quiz, lab)
+        dueDate: assignment.due_at, //due date=time
+        points: assignment.points_possible, //how many pts the assignment is worth
+        url: assignment.html_url,//can give user a link to the assingment!
+      };
+
+      if (assignment.submission) { // if they submitted the assignment
+        assignmentInfo.submissionState = assignment.submission.workflow_state;//did they submit yet (submitted, unsubmitted, graded, pending_review)
+        assignmentInfo.submissionDate = assignment.submission.submitted_at;
       }
       else {
-        doneList.push(assignmentInfo);
+        assignmentInfo.submissionState = false;
+        assignmentInfo.submissionDate = null;
       }
+
+      assignmentList.push(assignmentInfo);
 
       });
     });
   };
 
-  for (const assignment of prevNotDone){
-    for (const doneAssignment of allList) {//for debugging. change to doneList when ready
-      if ((assignment[1] == doneAssignment[1]) && (assignment[0] == doneAssignment[0])) {
-        countEarly += 1;
-      }
-    }
-  }
-
-  console.log(countEarly);
-
-  chrome.storage.local.set({allAssignments: allList}); //may not need this??
-  chrome.storage.local.set({incompleteAssignments: notDoneList});
-  chrome.storage.local.set({completeAssignments: doneList});
-  console.log("stored")//debugging
+  chrome.storage.local.set({assignments: {assignmentWeights, assignmentList}}); //may not need this??
+  console.log("stored weights", assignmentWeights);//debugging
+  console.log("stored assignments", assignmentList);
 }
 
-saveAllAssignments()
+saveAllAssignments();
 
