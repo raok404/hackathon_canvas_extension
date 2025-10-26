@@ -1,33 +1,30 @@
 {
-    "name": "Canvas Productivity Sidebar",
-    "description": "Sidebar with all Canvas assignments from your calendar feed.",
-    "version": "0.1.0",
+    "name": "Hello Extensions",
+    "description": "Base Level Extension",
+    "version": "1.0",
     "manifest_version": 3,
-
     "icons": {
-        "16": "images/icon-16.png",
-        "32": "images/icon-32.png",
-        "48": "images/icon-48.png",
-        "128": "images/icon-128.png"
+        "16": "images/logo.png",
+        "32": "images/logo.png",
+        "48": "images/logo.png",
+        "128": "images/logo.png"
     },
-
-    "background": { "service_worker": "background.js" },
-
-    "action": { "default_title": "Canvas Sidebar" },
-
-    "side_panel": { "default_path": "sidebar.html" },
-
-    "options_page": "options.html",
-
-    "permissions": ["tabs", "sidePanel", "storage", "alarms", "notifications"],
-
-    "host_permissions": ["https://*.instructure.com/*"],
-
     "content_scripts": [
         {
-            "matches": ["https://*.instructure.com/*"],
             "js": ["scripts/content.js"],
+            "matches": ["https://*.instructure.com/"],
             "run_at": "document_idle"
         }
-    ]
+    ],
+    "action": {
+        "default_popup": "hello.html",
+        "default_icon": "temp_icon.png"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "permissions": ["sidePanel","storage", "activeTab", "scripting"],
+    "side_panel": {
+        "default_path": "sidebar.html"
+    }
 }

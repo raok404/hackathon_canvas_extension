@@ -1,25 +1,166 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <title>Canvas Sidebar</title>
+    <meta charset="UTF-8">
+    <title>Early Bird Assistant</title>
     <style>
-        body { margin:0; font: 13px system-ui, -apple-system, Segoe UI, Roboto, Arial; }
-        .wrap { padding: 12px; max-height: 100vh; overflow: auto; }
-        .row { padding:10px 8px; border-bottom:1px solid #eee; }
-        .title { font-weight:600; }
-        .meta { color:#666; font-size:12px; margin-top:2px; }
-        .topbar { display:flex; gap:8px; align-items:center; padding:8px; position:sticky; top:0; background:#fff; border-bottom:1px solid #eee; z-index:1; }
-        button { padding:6px 10px; }
+        body {
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            background-color: #fcfcfc;
+            color: #111827;
+            margin: 0;
+            padding: 16px;
+            width: 300px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        h1 {
+            color: #b35009;
+            text-align: center;
+            margin-bottom: 6px;
+            font-size: 22px;
+        }
+
+        .status {
+            background: #fef3c7;
+            padding: 8px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: 500;
+            color: #b45309;
+            font-size: 13px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            background-color: #f59e0b;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #d97706;
+        }
+
+        hr {
+            margin: 14px 0;
+            border: none;
+            border-top: 1px solid #ddd;
+        }
+
+        .progress-container {
+            background: #e5e7eb;
+            border-radius: 10px;
+            height: 14px;
+            width: 100%;
+            margin-top: 4px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #f59e0b, #f97316, #fde68a);
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out;
+        }
+        .progress-label {
+            text-align: center;
+            font-size: 12px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .todo-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            padding: 10px;
+            margin-bottom: 8px;
+            transition: transform 0.2s ease;
+        }
+        .todo-card:hover { transform: scale(1.02); }
+        .todo-title {
+            color: #1e293b;
+            font-weight: 600;
+            margin: 0 0 3px;
+            font-size: 14px;
+        }
+        .todo-date { font-size: 12px; color: #475569; margin-bottom: 6px; }
+        .points { font-size: 12px; color: #f59e0b; font-weight: 600; }
+
+
+        .tip {
+            background: #fef9c3;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 13px;
+            color: #78350f;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-top: 10px;
+            text-align: center;
+        }
+
+
+        .dark-mode {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+        .dark-mode .todo-card {
+            background: #1e293b;
+            color: #f1f5f9;
+            box-shadow: 0 1px 4px rgba(255,255,255,0.1);
+        }
+        .dark-mode .tip {
+            background: #334155;
+            color: #facc15;
+        }
     </style>
 </head>
+
 <body>
-<div class="topbar">
-    <button id="refreshBtn">Refresh</button>
-    <span id="lastSync" class="meta"></span>
-    <a href="options.html" target="_blank" style="margin-left:auto;">Settings</a>
+<h1>  Early Bird 🦜</h1>
+<div class="status" id="status">🪶 Early Bird Mode Active!</div>
+
+<div class="button-group">
+    <button id="focusCheck">Check Focus</button>
+    <button id="reflectBtn">Reflection Prompt</button>
+    <button id="timerBtn">Start Focus Timer</button>
+    <button id="distractionBtn">Hide Distractions</button>
 </div>
-<div class="wrap" id="list"></div>
+
+<div style="text-align:center;">
+    <button id="themeToggle">🌞 / 🌜</button>
+</div>
+
+<p id="feedback" style="text-align:center;"></p>
+
+<hr>
+
+<h2 style="text-align:center;color:#b35009;">This Week's Progress</h2>
+<div class="progress-label" id="progressLabel">0 / 15 Points</div>
+<div class="progress-container"><div class="progress-fill" id="progressFill"></div></div>
+
+<h2 style="text-align:center;color:#b35009;">Assignments This Week</h2>
+<div id="todoList"></div>
+
+<div class="tip" id="dailyTip"></div>
+
 <script src="sidebar.js"></script>
 </body>
 </html>
