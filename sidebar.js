@@ -9,6 +9,38 @@ document.addEventListener("DOMContentLoaded", () => {
   const themeToggle = document.getElementById("themeToggle");
   const dailyTip = document.getElementById("dailyTip");
 
+  const focusCheck = document.getElementById("focusCheck");
+  if (focusCheck) {
+    focusCheck.addEventListener("click", () => {
+      feedback.innerText = "Focus check complete. Stay sharp!";
+    });
+  }
+
+  const reflectBtn = document.getElementById("reflectBtn");
+  if (reflectBtn) {
+    reflectBtn.addEventListener("click", () => {
+      const prompts = [
+        "What distracted you most today?",
+        "Which task felt most rewarding?",
+        "How can you make tomorrow 1% better?",
+        "Did you give your full attention today?",
+        "What’s one thing you can finish earlier tomorrow?"
+      ];
+      const random = prompts[Math.floor(Math.random() * prompts.length)];
+      feedback.innerText = `${random}`;
+    });
+  }
+
+  if (distractionBtn) {
+    distractionBtn.addEventListener("click", () => {
+      window.open(
+        chrome.runtime.getURL("calendar.html"),
+        "calendarPopup",
+        "width=600,height=450,left=200,top=100,resizable=yes,scrollbars=yes"
+      );
+    });
+  }
+
   function updateProgress(totalPoints) {
     const percent = Math.min((totalPoints / WEEKLY_GOAL) * 100, 100);
     progressFill.style.width = `${percent}%`;
