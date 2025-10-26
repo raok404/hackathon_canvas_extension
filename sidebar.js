@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const WEEKLY_GOAL = 25;
 
   const timerBtn = document.getElementById("timerBtn");
-  const distractionBtn = document.getElementById("distractionBtn");
+  const calendarBtn = document.getElementById("calendarBtn");
   const themeToggle = document.getElementById("themeToggle");
   const dailyTip = document.getElementById("dailyTip");
 
@@ -31,15 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  if (distractionBtn) {
-    distractionBtn.addEventListener("click", () => {
-      window.open(
-        chrome.runtime.getURL("calendar.html"),
-        "calendarPopup",
-        "width=600,height=450,left=200,top=100,resizable=yes,scrollbars=yes"
-      );
-    });
-  }
 
   function updateProgress(totalPoints) {
     const percent = Math.min((totalPoints / WEEKLY_GOAL) * 100, 100);
@@ -129,30 +120,9 @@ document.addEventListener("DOMContentLoaded", () => {
         "popupWindow",
         "width=800, height=600,left=100,top=100,resizeable=yes,scrollbars=yes"
     )
-  }
-        
-    // hidden = !hidden;
-    // if (typeof chrome !== "undefined" && chrome.scripting && chrome.tabs) {
-    //   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    //     chrome.scripting.executeScript({
-    //       target: { tabId: tabs[0].id },
-    //       func: (hide) => {
-    //         const styleId = "earlybird-hide-style";
-    //         if (hide) {
-    //           const s = document.createElement("style");
-    //           s.id = styleId;
-    //           s.textContent = "#right-side, .ic-app-nav-toggle-and-crumbs__bar { visibility:hidden !important; }";
-    //           document.head.appendChild(s);
-    //         } else {
-    //           document.getElementById(styleId)?.remove();
-    //         }
-    //       },
-    //       args: [hidden]
-    //     });
-    //   });
-    // }
-    // feedback.innerText = hidden ? "Distractions hidden!" : "Distractions visible.";
+
   });
+        
 
   if (chrome.runtime && chrome.runtime.onMessage) {
     chrome.runtime.onMessage.addListener((message) => {
