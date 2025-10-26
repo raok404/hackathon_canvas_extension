@@ -86,7 +86,6 @@ function watchFor(selector, onFound) {
   mo.observe(document.documentElement, { childList: true, subtree: true });
 }
 
-let assignments = [];//
 
 async function getData(endpoint) {
   try {
@@ -123,7 +122,9 @@ async function saveClasses(){
   data2 = await getData("/api/v1/users/self/courses?enrollment_state=active&per_page=30")
   data2.forEach((element)=> {
     if (course_id_array.includes(element.id)) {
-      classes_dict[element.id] = element.course_code; //could also try .name if you want the whole name
+      classes_dict[element.id] = element.name;
+       //could also try .name if you want the whole name XXX2024 - Physics
+       //course_code for short XXX2024
     }
   });
   chrome.storage.local.set({classes: classes_dict});
@@ -136,7 +137,8 @@ async function saveAllAssignments(){
   //logic for counting points
   let countOntime = 0;
   let countEarly = 0;
-  let countSuperEarly = 0;
+  let countSuperEarly = 0;//
+
   const today = new Date().toISOString();
 
   classDict = await chrome.storage.local.get("classes");
@@ -148,15 +150,16 @@ async function saveAllAssignments(){
   let assignmentWeights = {};
   let assignmentList = [];
 
-  for (const [courseID, courseName] of Object.entries(classDict)) {
-    let assignmentGroups = await getData(`/api/v1/courses/${courseID}/assignment_groups?include[]=assignments&include[]=submission`);
-    assignmentGroups = assignmentGroups.
-    assignmentWeights[courseID] = {}
+  for (const [courseID, courseName] of Object.entries(classDict.classes)) {
+    console.log(courseID, "ID");//
+    let assignmentIterator = await getData(`/api/v1/courses/${courseID}/assignment_groups?include[]=assignments&include[]=submission`);
+    console.log(assignmentIterator, " TESTING");//
+    assignmentWeights[courseID] = {};
 
-    assignmentGroups.forEach((group)=> {
+    assignmentIterator.forEach((group)=> {
       //console.log(element.name);
       //assignment weights for each group
-      assignmentWeights[courseID].name = group.group_weight;
+      assignmentWeights[courseID][group.name] = group.group_weight;//fix r=this
 
       assignmentIterator = group.assignments
       assignmentIterator.forEach((assignment)=>{
@@ -172,7 +175,7 @@ async function saveAllAssignments(){
 
       if (assignment.submission) { // if they submitted the assignment
         assignmentInfo.submissionState = assignment.submission.workflow_state;//did they submit yet (submitted, unsubmitted, graded, pending_review)
-        assignmentInfo.submissionDate = assignment.submission.submitted_at;
+        assignmentInfo.submissionDate = assignment.submission.submitted_at;//time and date
       }
       else {
         assignmentInfo.submissionState = false;
