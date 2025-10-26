@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Focus Timer - Early Bird</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #fffaf3;
+      color: #1e293b;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    h1 {
+      color: #f97316;
+      font-size: 26px;
+      margin-bottom: 20px;
+    }
+
+    #timerDisplay {
+      font-size: 72px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: #f97316;
+      text-shadow: 0 0 10px rgba(255,165,0,0.5);
+      margin-bottom: 30px;
+    }
+
+    button {
+      background-color: #f59e0b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #d97706;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Focus Timer</h1>
+  <div id="timerDisplay">45:00</div>
+  <button id="startBtn">Start Focus</button>
+  <canvas id="confetti"></canvas>
+
+  <script src="timer.js"></script>
+</body>
+</html>
