@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const total = (data.points || 0) + points;
       chrome.storage.local.set({ points: total }, () => {
         document.getElementById(`points-${id}`).innerText = `${total} pts total`;
-        feedback.innerText = `🎉 You earned ${points} point${points > 1 ? "s" : ""}!`;
+        feedback.innerText = `You earned ${points} point${points > 1 ? "s" : ""}!`;
         updateProgress(total);
       });
     });
@@ -121,12 +121,45 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   });
 
+
+  let hidden = false;
+  calendarBtn.addEventListener("click", () => {
+    window.open(
+      "calendar.html",
+        "popupWindow",
+        "width=800, height=600,left=100,top=100,resizeable=yes,scrollbars=yes"
+    )
+  }
+        
+    // hidden = !hidden;
+    // if (typeof chrome !== "undefined" && chrome.scripting && chrome.tabs) {
+    //   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    //     chrome.scripting.executeScript({
+    //       target: { tabId: tabs[0].id },
+    //       func: (hide) => {
+    //         const styleId = "earlybird-hide-style";
+    //         if (hide) {
+    //           const s = document.createElement("style");
+    //           s.id = styleId;
+    //           s.textContent = "#right-side, .ic-app-nav-toggle-and-crumbs__bar { visibility:hidden !important; }";
+    //           document.head.appendChild(s);
+    //         } else {
+    //           document.getElementById(styleId)?.remove();
+    //         }
+    //       },
+    //       args: [hidden]
+    //     });
+    //   });
+    // }
+    // feedback.innerText = hidden ? "Distractions hidden!" : "Distractions visible.";
+  });
+
   if (chrome.runtime && chrome.runtime.onMessage) {
     chrome.runtime.onMessage.addListener((message) => {
       if (message.action === "refreshPoints" && message.totalPoints !== undefined) {
-        console.log("🌟 Sidebar received refreshed points:", message.totalPoints);
+        console.log("Sidebar received refreshed points:", message.totalPoints);
         updateProgress(message.totalPoints);
-        feedback.innerText = `🌟 Timer complete! You now have ${message.totalPoints} total points!`;
+        feedback.innerText = `Timer complete! You now have ${message.totalPoints} total points!`;
       }
     });
   }

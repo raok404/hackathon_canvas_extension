@@ -1,0 +1,32 @@
+.calendar-container {
+    width: 700px;
+    margin: 20px auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+}
+
+.calendar-header {
+    text-align: center;
+    padding: 10px;
+    background-color: #f59e0b;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+.calendar-days-of-week, .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+}
+.calendar-days-of-week span {
+    padding: 5px;
+    font-weight: bold;
+}
+.calendar-grid div {
+    padding: 30px;
+    border: 1px solid #eee;
+}
+.calendar-grid .current-day {
+    background-color: #fef9c3;
+    font-weight: bold;
+}
