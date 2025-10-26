@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const WEEKLY_GOAL = 15;
 
   const timerBtn = document.getElementById("timerBtn");
-  const distractionBtn = document.getElementById("distractionBtn");
+  const calendarBtn = document.getElementById("distractionBtn");
   const themeToggle = document.getElementById("themeToggle");
   const dailyTip = document.getElementById("dailyTip");
 
@@ -149,28 +149,33 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   let hidden = false;
-  distractionBtn.addEventListener("click", () => {
-    hidden = !hidden;
-    if (typeof chrome !== "undefined" && chrome.scripting && chrome.tabs) {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.scripting.executeScript({
-          target: { tabId: tabs[0].id },
-          func: (hide) => {
-            const styleId = "earlybird-hide-style";
-            if (hide) {
-              const s = document.createElement("style");
-              s.id = styleId;
-              s.textContent = "#right-side, .ic-app-nav-toggle-and-crumbs__bar { visibility:hidden !important; }";
-              document.head.appendChild(s);
-            } else {
-              document.getElementById(styleId)?.remove();
-            }
-          },
-          args: [hidden]
-        });
-      });
-    }
-    feedback.innerText = hidden ? "Distractions hidden!" : "Distractions visible.";
+  calendarBtn.addEventListener("click", () => {
+    window.open(
+        "calendar.html",
+        "popupWindow",
+        "width=600, height=400,left=100,top=100,resizeable=yes,scrollbars=yes"
+    )
+    // hidden = !hidden;
+    // if (typeof chrome !== "undefined" && chrome.scripting && chrome.tabs) {
+    //   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    //     chrome.scripting.executeScript({
+    //       target: { tabId: tabs[0].id },
+    //       func: (hide) => {
+    //         const styleId = "earlybird-hide-style";
+    //         if (hide) {
+    //           const s = document.createElement("style");
+    //           s.id = styleId;
+    //           s.textContent = "#right-side, .ic-app-nav-toggle-and-crumbs__bar { visibility:hidden !important; }";
+    //           document.head.appendChild(s);
+    //         } else {
+    //           document.getElementById(styleId)?.remove();
+    //         }
+    //       },
+    //       args: [hidden]
+    //     });
+    //   });
+    // }
+    // feedback.innerText = hidden ? "Distractions hidden!" : "Distractions visible.";
   });
 
   if (typeof chrome !== "undefined" && chrome.storage) {
