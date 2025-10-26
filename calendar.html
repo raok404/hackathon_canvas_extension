@@ -3,10 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Another Page</title>
+    <title>EarlyBird Calendar</title>
+    <link rel="stylesheet" href="calendar.css">
 </head>
+
 <body>
-<h1>This is Another Page!</h1>
-<p>You arrived here from the main page.</p>
+
+<div class="calendar-container">
+    <div id="real-time-clock"></div>
+    <div class="calendar-header">
+        <span id="month-year"></span>
+    </div>
+    <div class="calendar-days-of-week">
+        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+    </div>
+    <div id="calendar-grid" class="calendar-grid">
+    </div>
+</div>
+<script src="calendar.js"></script>
+
 </body>
 </html>

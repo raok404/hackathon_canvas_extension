@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.open(
         "calendar.html",
         "popupWindow",
-        "width=600, height=400,left=100,top=100,resizeable=yes,scrollbars=yes"
+        "width=800, height=600,left=100,top=100,resizeable=yes,scrollbars=yes"
     )
     // hidden = !hidden;
     // if (typeof chrome !== "undefined" && chrome.scripting && chrome.tabs) {

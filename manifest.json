@@ -11,7 +11,7 @@
   },
   "content_scripts": [
     {
-      "js": ["scripts/content.js"],
+      "js": ["scripts/content.js", "calendar.js"],
       "matches": ["https://*.instructure.com/"],
       "run_at": "document_idle"
     }
