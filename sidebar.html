@@ -1,47 +1,166 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>FocusFlow Assistant</title>
+  <meta charset="UTF-8">
+  <title>Early Bird Assistant</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
       background-color: #fcfcfc;
       color: #111827;
       margin: 0;
-      padding: 20px;
+      padding: 16px;
+      width: 300px;
+      transition: background 0.3s, color 0.3s;
     }
+
     h1 {
-      color: #e36f10;
+      color: #b35009;
+      text-align: center;
+      margin-bottom: 6px;
+      font-size: 22px;
     }
+
     .status {
-      background: #e0f2fe;
-      padding: 10px;
+      background: #fef3c7;
+      padding: 8px;
       border-radius: 8px;
       margin-bottom: 10px;
+      text-align: center;
+      font-weight: 500;
+      color: #b45309;
+      font-size: 13px;
     }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
     button {
-      background-color: #2563eb;
+      background-color: #f59e0b;
       color: white;
       border: none;
       border-radius: 6px;
-      padding: 8px 12px;
+      padding: 6px 10px;
       cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #d97706;
+    }
+
+    hr {
+      margin: 14px 0;
+      border: none;
+      border-top: 1px solid #ddd;
+    }
+
+    .progress-container {
+      background: #e5e7eb;
+      border-radius: 10px;
+      height: 14px;
+      width: 100%;
+      margin-top: 4px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #f59e0b, #f97316, #fde68a);
+      border-radius: 10px;
+      transition: width 0.5s ease-in-out;
+    }
+    .progress-label {
+      text-align: center;
+      font-size: 12px;
+      color: #333;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .todo-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      padding: 10px;
+      margin-bottom: 8px;
+      transition: transform 0.2s ease;
+    }
+    .todo-card:hover { transform: scale(1.02); }
+    .todo-title {
+      color: #1e293b;
+      font-weight: 600;
+      margin: 0 0 3px;
       font-size: 14px;
     }
-    button:hover {
-      background-color: #1d4ed8;
+    .todo-date { font-size: 12px; color: #475569; margin-bottom: 6px; }
+    .points { font-size: 12px; color: #f59e0b; font-weight: 600; }
+
+
+    .tip {
+      background: #fef9c3;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 13px;
+      color: #78350f;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      margin-top: 10px;
+      text-align: center;
+    }
+
+
+    .dark-mode {
+      background-color: #0f172a;
+      color: #f1f5f9;
+    }
+    .dark-mode .todo-card {
+      background: #1e293b;
+      color: #f1f5f9;
+      box-shadow: 0 1px 4px rgba(255,255,255,0.1);
+    }
+    .dark-mode .tip {
+      background: #334155;
+      color: #facc15;
     }
   </style>
 </head>
-<body>
-  <h1>FocusFlow</h1>
-  <div class="status" id="status"> Integrity Mode Active! </div>
-  <button id="focusCheck">Check Focus</button>
-  <button id="reflectBtn">Reflection Prompt</button>
 
-  <p id="feedback" style="margin-top:10px;"></p>
+<body>
+  <h1>  Early Bird 🦜</h1>
+  <div class="status" id="status">🪶 Early Bird Mode Active!</div>
+
+  <div class="button-group">
+    <button id="focusCheck">Check Focus</button>
+    <button id="reflectBtn">Reflection Prompt</button>
+    <button id="timerBtn">Start Focus Timer</button>
+    <button id="distractionBtn">Hide Distractions</button>
+  </div>
+
+  <div style="text-align:center;">
+    <button id="themeToggle">🌞 / 🌜</button>
+  </div>
+
+  <p id="feedback" style="text-align:center;"></p>
+
+  <hr>
+
+  <h2 style="text-align:center;color:#b35009;">This Week's Progress</h2>
+  <div class="progress-label" id="progressLabel">0 / 15 Points</div>
+  <div class="progress-container"><div class="progress-fill" id="progressFill"></div></div>
+
+  <h2 style="text-align:center;color:#b35009;">Assignments This Week</h2>
+  <div id="todoList"></div>
+
+  <div class="tip" id="dailyTip"></div>
 
   <script src="sidebar.js"></script>
 </body>
 </html>
-
