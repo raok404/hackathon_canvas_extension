@@ -1,6 +1,6 @@
 {
   "name": "Early Bird",
-  "description": "Gamified focus and productivity assistant for Canvas",
+  "description": "A productivity-focused AI-assisted extension for Canvas that rewards early work habits.",
   "version": "1.0",
   "manifest_version": 3,
 
@@ -8,7 +8,21 @@
     "16": "images/logo.png",
     "32": "images/logo.png",
     "48": "images/logo.png",
-    "128":  "images/logo.png"
+    "128": "images/logo.png"
+  },
+
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "sidePanel",
+    "notifications"
+  ],
+
+  "host_permissions": ["<all_urls>"],
+
+  "background": {
+    "service_worker": "background.js"
   },
 
   "content_scripts": [
@@ -24,19 +38,17 @@
     "default_icon": "temp_icon.png"
   },
 
-  "background": {
-    "service_worker": "background.js"
-  },
-
-  "permissions": ["sidePanel", "storage", "activeTab", "scripting"],
-
   "side_panel": {
     "default_path": "sidebar.html"
   },
 
   "web_accessible_resources": [
     {
-      "resources": ["cardinal-37075.mp3"],
+      "resources": [
+        "scripts/cardinal-37075.mp3",
+        "timer.html",
+        "timer.js"
+      ],
       "matches": ["<all_urls>"]
     }
   ]

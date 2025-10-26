@@ -24,3 +24,18 @@ chrome.tabs.onActivated.addListener(async ({ tabId }) => {
         chrome.sidePanel.setOptions({ path: mainPage });
     }
 });
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.action === "updateProgress") {
+    console.log("Background received updateProgress:", message.totalPoints);
+
+    chrome.runtime.sendMessage({
+      action: "refreshPoints",
+      totalPoints: message.totalPoints
+    });
+
+    sendResponse({ status: "ok" });
+  }
+  return true; 
+});
+

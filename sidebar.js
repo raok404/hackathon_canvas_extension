@@ -2,34 +2,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const feedback = document.getElementById("feedback");
   const progressFill = document.getElementById("progressFill");
   const progressLabel = document.getElementById("progressLabel");
-  const WEEKLY_GOAL = 15;
+  const WEEKLY_GOAL = 25;
 
   const timerBtn = document.getElementById("timerBtn");
-  const calendarBtn = document.getElementById("distractionBtn");
+  const distractionBtn = document.getElementById("distractionBtn");
   const themeToggle = document.getElementById("themeToggle");
   const dailyTip = document.getElementById("dailyTip");
 
-  document.getElementById("focusCheck").addEventListener("click", () => {
-    feedback.innerText = "Focus check complete. Stay sharp!";
-  });
+  function updateProgress(totalPoints) {
+    const percent = Math.min((totalPoints / WEEKLY_GOAL) * 100, 100);
+    progressFill.style.width = `${percent}%`;
+    progressLabel.innerText = `${totalPoints} / ${WEEKLY_GOAL} Points`;
+  }
 
-  document.getElementById("reflectBtn").addEventListener("click", () => {
-    const prompts = [
-      "What distracted you most today?",
-      "Which task felt most rewarding?",
-      "How can you make tomorrow 1% better?",
-      "Did you give your full attention today?",
-      "What’s one thing you can finish earlier tomorrow?"
-    ];
-    const random = prompts[Math.floor(Math.random() * prompts.length)];
-    feedback.innerText = `${random}`;
-  });
-
-  if (typeof chrome !== "undefined" && chrome.storage) {
+  if (chrome.storage) {
     chrome.storage.local.get("points", (data) => {
-      const totalPoints = data.points || 0;
-      updateProgress(totalPoints);
-      renderList(totalPoints);
+      const total = data.points || 0;
+      updateProgress(total);
+      renderAssignments(total);
     });
   }
 
@@ -40,13 +30,16 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: 4, name: "Lab Report", due: "2025-10-31T23:59:00" }
   ];
 
-  function renderList(totalPoints) {
+  function renderAssignments(totalPoints) {
     const list = document.getElementById("todoList");
+    if (!list) return;
+
     list.innerHTML = "";
     assignments.forEach(a => {
       const due = new Date(a.due);
       const now = new Date();
       const diffDays = Math.floor((due - now) / (1000 * 60 * 60 * 24));
+
       if (diffDays <= 7 && diffDays >= 0) {
         const card = document.createElement("div");
         card.className = "todo-card";
@@ -54,10 +47,11 @@ document.addEventListener("DOMContentLoaded", () => {
           <h3 class="todo-title">${a.name}</h3>
           <p class="todo-date">Due: ${due.toLocaleString()}</p>
           <button id="btn-${a.id}">Mark Complete</button>
-          <p class="points" id="points-${a.id}"> ${totalPoints} pts total</p>
+          <p class="points" id="points-${a.id}">${totalPoints} pts total</p>
         `;
         styleCard(card, diffDays);
         list.appendChild(card);
+
         card.querySelector(`#btn-${a.id}`).addEventListener("click", () => {
           completeAssignment(a.id, a.due);
         });
@@ -75,110 +69,37 @@ document.addEventListener("DOMContentLoaded", () => {
     const now = new Date();
     const due = new Date(dueDate);
     const diffDays = Math.floor((due - now) / (1000 * 60 * 60 * 24));
-    let points = 1;
-    if (diffDays >= 3) points = 3;
-    else if (diffDays >= 1) points = 2;
+    let points = diffDays >= 3 ? 3 : diffDays >= 1 ? 2 : 1;
 
-    if (typeof chrome !== "undefined" && chrome.storage) {
-      chrome.storage.local.get("points", (data) => {
-        const total = (data.points || 0) + points;
-        chrome.storage.local.set({ points: total }, () => {
-          document.getElementById(`points-${id}`).innerText = ` ${total} pts total`;
-          feedback.innerText = ` You earned ${points} point${points > 1 ? "s" : ""}!`;
-          updateProgress(total);
-        });
+    chrome.storage.local.get("points", (data) => {
+      const total = (data.points || 0) + points;
+      chrome.storage.local.set({ points: total }, () => {
+        document.getElementById(`points-${id}`).innerText = `${total} pts total`;
+        feedback.innerText = `🎉 You earned ${points} point${points > 1 ? "s" : ""}!`;
+        updateProgress(total);
       });
-    }
+    });
   }
-
-  function updateProgress(totalPoints) {
-    const percent = Math.min((totalPoints / WEEKLY_GOAL) * 100, 100);
-    progressFill.style.width = `${percent}%`;
-    progressLabel.innerText = `${totalPoints} / ${WEEKLY_GOAL} Points`;
-  }
-
-
-  let timerActive = false;
-  let timerInterval;
 
   timerBtn.addEventListener("click", () => {
-    if (timerActive) return;
-    timerActive = true;
-
-    // const totalSeconds = 45 * 60;
-    const totalSeconds = 5; // quick test
-    let remaining = totalSeconds;
-    const timerDisplay = document.getElementById("focusTimer");
-
-    feedback.innerText = "⏱ Focus session started (45 min)...";
-
-    const alarm = new Audio(chrome.runtime.getURL("cardinal-37075.mp3"));
-    alarm.volume = 0.7;
-    alarm.load();
-
-    function updateDisplay() {
-      const mins = Math.floor(remaining / 60);
-      const secs = remaining % 60;
-      timerDisplay.innerText = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-    }
-
-    updateDisplay();
-
-    timerInterval = setInterval(() => {
-      remaining--;
-      updateDisplay();
-
-      if (remaining <= 0) {
-        clearInterval(timerInterval);
-        timerDisplay.innerText = "00:00";
-        timerActive = false;
-        feedback.innerText = "Session complete! +1 point earned.";
-
-        alarm.play().catch(() => console.log("Audio play blocked by browser."));
-
-        if (typeof chrome !== "undefined" && chrome.storage) {
-          chrome.storage.local.get(["points"], (data) => {
-            const total = (data?.points || 0) + 1;
-            chrome.storage.local.set({ points: total }, () => {
-              updateProgress(total);
-            });
-          });
-        }
-      }
-    }, 1000);
-  });
-
-  let hidden = false;
-  calendarBtn.addEventListener("click", () => {
     window.open(
-        "calendar.html",
-        "popupWindow",
-        "width=600, height=400,left=100,top=100,resizeable=yes,scrollbars=yes"
-    )
-    // hidden = !hidden;
-    // if (typeof chrome !== "undefined" && chrome.scripting && chrome.tabs) {
-    //   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    //     chrome.scripting.executeScript({
-    //       target: { tabId: tabs[0].id },
-    //       func: (hide) => {
-    //         const styleId = "earlybird-hide-style";
-    //         if (hide) {
-    //           const s = document.createElement("style");
-    //           s.id = styleId;
-    //           s.textContent = "#right-side, .ic-app-nav-toggle-and-crumbs__bar { visibility:hidden !important; }";
-    //           document.head.appendChild(s);
-    //         } else {
-    //           document.getElementById(styleId)?.remove();
-    //         }
-    //       },
-    //       args: [hidden]
-    //     });
-    //   });
-    // }
-    // feedback.innerText = hidden ? "Distractions hidden!" : "Distractions visible.";
+      chrome.runtime.getURL("timer.html"),
+      "focusTimer",
+      "width=420,height=520,left=200,top=100,resizable=yes,scrollbars=no"
+    );
   });
 
-  if (typeof chrome !== "undefined" && chrome.storage) {
+  if (chrome.runtime && chrome.runtime.onMessage) {
+    chrome.runtime.onMessage.addListener((message) => {
+      if (message.action === "refreshPoints" && message.totalPoints !== undefined) {
+        console.log("🌟 Sidebar received refreshed points:", message.totalPoints);
+        updateProgress(message.totalPoints);
+        feedback.innerText = `🌟 Timer complete! You now have ${message.totalPoints} total points!`;
+      }
+    });
+  }
+
+  if (chrome.storage) {
     chrome.storage.local.get("theme", (data) => {
       if (data.theme === "dark") document.body.classList.add("dark-mode");
     });
@@ -197,6 +118,5 @@ document.addEventListener("DOMContentLoaded", () => {
     "Reward yourself for starting early ☕",
     "Every morning is a new opportunity 🚀"
   ];
-  const randomTip = tips[Math.floor(Math.random() * tips.length)];
-  dailyTip.innerText = randomTip;
+  dailyTip.innerText = tips[Math.floor(Math.random() * tips.length)];
 });
