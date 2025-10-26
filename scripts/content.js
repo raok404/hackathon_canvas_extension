@@ -142,13 +142,14 @@ async function saveAllAssignments(){
   for (const subList of classList.classes) {
     items = await getData(`/api/v1/courses/${subList[0]}/assignment_groups?include[]=assignments&include[]=submission`);
 
-    items.forEach((element)=> {
+    items.forEach((group)=> {
       //console.log(element.name);
-      assignmentList = element.assignments
+      assignmentList = group.assignments
       assignmentList.forEach((assignment)=>{
         //console.log("   ", assignment.name);
         allList.push([assignment.course_id,
-          assignment.name,
+          assignment.name, // assignment name (ex exam 1, unit 3 quiz)
+          group.name, //category name (ex exam, quiz, lab)
           assignment.due_at,
           assignment.points_possible,
           assignment.html_url,
