@@ -46,20 +46,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  const assignments = [
-    { id: 1, name: "Module 9 Quiz", due: "2025-10-28T23:59:00" },
-    { id: 2, name: "Essay Draft", due: "2025-10-27T23:59:00" },
-    { id: 3, name: "Project Presentation", due: "2025-10-30T23:59:00" },
-    { id: 4, name: "Lab Report", due: "2025-10-31T23:59:00" }
-  ];
+  // const assignments = [
+  //   { id: 1, name: "Module 9 Quiz", due: "2025-10-28T23:59:00" },
+  //   { id: 2, name: "Essay Draft", due: "2025-10-27T23:59:00" },
+  //   { id: 3, name: "Project Presentation", due: "2025-10-30T23:59:00" },
+  //   { id: 4, name: "Lab Report", due: "2025-10-31T23:59:00" }
+  // ];
 
-  function renderAssignments(totalPoints) {
+
+  async function renderAssignments(totalPoints) {
+    const assignmentsLoaded = await chrome.storage.local.get("assignments");
+    const assignments = assignmentsLoaded.assignments.assignmentList;
+    console.log("SIDEBAR ASSIGNMENTS ", assignments);
+
     const list = document.getElementById("todoList");
     if (!list) return;
 
     list.innerHTML = "";
     assignments.forEach(a => {
-      const due = new Date(a.due);
+      const due = new Date(a.dueDate);
       const now = new Date();
       const diffDays = Math.floor((due - now) / (1000 * 60 * 60 * 24));
 
@@ -69,14 +74,14 @@ document.addEventListener("DOMContentLoaded", () => {
         card.innerHTML = `
           <h3 class="todo-title">${a.name}</h3>
           <p class="todo-date">Due: ${due.toLocaleString()}</p>
-          <button id="btn-${a.id}">Mark Complete</button>
-          <p class="points" id="points-${a.id}">${totalPoints} pts total</p>
+          <button id="btn-${a.assignment_id}">Mark Complete</button>
+          <p class="points" id="points-${a.assignment_id}">${a.points} pts total</p>
         `;
         styleCard(card, diffDays);
         list.appendChild(card);
 
-        card.querySelector(`#btn-${a.id}`).addEventListener("click", () => {
-          completeAssignment(a.id, a.due);
+        card.querySelector(`#btn-${a.assignment_id}`).addEventListener("click", () => {
+          completeAssignment(a.assignment_id, a.dueDate);
         });
       }
     });
