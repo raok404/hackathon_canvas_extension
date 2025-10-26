@@ -119,7 +119,7 @@ async function saveClasses(){
   let course_id_array = []
   data.forEach((element)=> {
     course_id_array.push(element.course_id)
-    console.log("added", element.course_id, "in array")
+    console.log("added", element.course_id, "in array")//debugging
   });
 
   classes_array = [];
@@ -130,35 +130,36 @@ async function saveClasses(){
     }
   });
   chrome.storage.local.set({classes: classes_array});
-  console.log("stored", classes_array)
+  console.log("stored", classes_array)//debugging
 }
 
 saveClasses()
 
-async function saveToDo(){
-  todoList = [];
+async function saveAllAssignments(){
+  allList = [];
   classList = await chrome.storage.local.get("classes");
   console.log(classList);
   for (const subList of classList.classes) {
-    items = await getData(`/api/v1/courses/${subList[0]}/assignment_groups?include[]=assignments`);
+    items = await getData(`/api/v1/courses/${subList[0]}/assignment_groups?include[]=assignments&include[]=submission`);
 
     items.forEach((element)=> {
       //console.log(element.name);
       assignmentList = element.assignments
       assignmentList.forEach((assignment)=>{
         //console.log("   ", assignment.name);
-        todoList.push(assignment.course_id,
+        allList.push([assignment.course_id,
           assignment.name,
           assignment.due_at,
           assignment.points_possible,
-          assignment.html_url,);
+          assignment.html_url,
+          assignment.submission.workflow_state]);
       });
     });
   };
 
-  
-  console.log(todoList);
+  chrome.storage.local.set({allAssignments: allList});
+  console.log("stored", allList)//debugging
 }
 
-saveToDo()
+saveAllAssignments()
 
