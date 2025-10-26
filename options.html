@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Canvas Sidebar – Options</title>
+    <style>
+        body { font: 14px system-ui, -apple-system, Segoe UI, Roboto, Arial; padding: 16px; }
+        input[type="text"] { width: 100%; padding: 8px; }
+        .row { margin: 12px 0; }
+        button { padding: 8px 12px; }
+        .hint { color:#666; font-size:12px; }
+    </style>
+</head>
+<body>
+<h2>Canvas Sidebar – Settings</h2>
+<div class="row">
+    <label>Canvas Calendar Feed (ICS) URL</label><br/>
+    <input id="icsUrl" type="text" placeholder="https://.../feeds/calendars/user_XXXX.ics?verification_token=..." />
+    <div class="hint">Get it in Canvas → Calendar → Calendar Feed → Copy Feed URL</div>
+</div>
+<div class="row">
+    <label>Look-ahead days</label><br/>
+    <input id="lookAhead" type="number" min="1" value="120"/>
+</div>
+<div class="row">
+    <button id="saveBtn">Save</button>
+    <span id="status" class="hint"></span>
+</div>
+<script src="options.js"></script>
+</body>
+</html>
