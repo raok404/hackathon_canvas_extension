@@ -5,15 +5,18 @@
 // });
 const welcomePage = 'sidebar.html';
 const mainPage = 'sidebar.html';
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener((details) => {
     chrome.sidePanel.setOptions({ path: welcomePage });
     chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
 
     //initialize local storage on extension installation
-    chrome.storage.local.set({assignments: {}});
-    chrome.storage.local.set({streak:0});
-    chrome.storage.local.set({points:0});
+    console.log("Extension installed or updated:", details.reason);//debugging
+    if (details.reason === "install") {
+        chrome.storage.local.set({assignments: {}, streak: 0, points: 0, classes:{}});
+    }
+
 });
+
 
 chrome.tabs.onActivated.addListener(async ({ tabId }) => {
     const { path } = await chrome.sidePanel.getOptions({ tabId });
