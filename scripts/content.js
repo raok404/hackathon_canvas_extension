@@ -114,7 +114,7 @@ async function getData(endpoint) {
 
 
 async function saveClasses(){
-  //updates "classes" - a dict of the course_id as the key and "text" course name as value
+  //updates "classes" - a nested list of the course_id and "text" course name
   data = await getData("/api/v1/users/self/todo");
   let course_id_array = []
   data.forEach((element)=> {
@@ -137,26 +137,26 @@ saveClasses()
 
 async function saveToDo(){
   todoList = [];
+  classList = await chrome.storage.local.get("classes");
+  console.log(classList);
+  for (const subList of classList.classes) {
+    items = await getData(`/api/v1/courses/${subList[0]}/assignment_groups?include[]=assignments`);
 
-  items = await getData("/api/v1/courses/542125/assignment_groups?include[]=assignments");
-  items.forEach((element)=> {
-    //context-type??
-    //if it's an assignment and not submitted yet
-    //each assignment gets saved in [course id, assignment name, due date, points possible]
-    // if (element.plannable_type == "assignment" && !element.submissions.submitted){
-    //   todoList.push([element.course_id, 
-    //     element.plannable.title, 
-    //     element.plannable.due_at, 
-    //     element.plannable.points_possible]);
-
-    //     console.log(element.plannable.title);
-    // }
-    console.log(element.name);
-    assignmentList = element.assignments
-    assignmentList.forEach((assignment)=>{
-      console.log("   ", assignment.name);
+    items.forEach((element)=> {
+      //console.log(element.name);
+      assignmentList = element.assignments
+      assignmentList.forEach((assignment)=>{
+        //console.log("   ", assignment.name);
+        todoList.push(assignment.course_id,
+          assignment.name,
+          assignment.due_at,
+          assignment.points_possible,
+          assignment.html_url,);
+      });
     });
-  });
+  };
+
+  
   console.log(todoList);
 }
 
