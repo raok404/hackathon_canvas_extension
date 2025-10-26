@@ -30,3 +30,20 @@
     background-color: #fef9c3;
     font-weight: bold;
 }
+#calendar-grid div {
+  position: relative;
+  text-align: center;
+  padding: 8px;
+}
+
+.due-dot {
+  position: absolute;
+  margin-top: 5px;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: #facc15;
+  border-radius: 50%;
+}
