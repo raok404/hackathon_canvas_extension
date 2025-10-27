@@ -134,38 +134,38 @@ async function saveClasses(){
 saveClasses()
 
 async function saveAllAssignments(){
-
-  const classDict = await chrome.storage.local.get("classes");
-  console.log(classDict);//
-
-  const storedAssignments = await chrome.storage.local.get("assignments") || {};
-  let storedAList = storedAssignments.assignments.assignmentList;
-  console.log(storedAList, "STORED ASSIGNMENTS LIST HOPEFULLY");
-
-  //map to help lookup what got changed/added
-  const storedMap = new Map(storedAList.map(a => [a.assignment_id, a]));
-  const newlyCompleted = [];
   //logic for counting points
-  let pointTotal = 0;
+  let countOntime = 0;
+  let countEarly = 0;
+  let countSuperEarly = 0;//
+
+  const today = new Date().toISOString();
+
+  classDict = await chrome.storage.local.get("classes");
+  console.log(classDict);
+
+  storedAssignments = await chrome.storage.local.get("assignments") || {};
+  console.log(storedAssignments);
 
   let assignmentWeights = {};
   let assignmentList = [];
 
   for (const [courseID, courseName] of Object.entries(classDict.classes)) {
+    console.log(courseID, "ID");//
     let assignmentIterator = await getData(`/api/v1/courses/${courseID}/assignment_groups?include[]=assignments&include[]=submission`);
+    console.log(assignmentIterator, " TESTING");//
     assignmentWeights[courseID] = {};
 
     assignmentIterator.forEach((group)=> {
+      //console.log(element.name);
       //assignment weights for each group
-      assignmentWeights[courseID][group.name] = group.group_weight;
+      assignmentWeights[courseID][group.name] = group.group_weight;//fix r=this
 
       assignmentIterator = group.assignments
-
       assignmentIterator.forEach((assignment)=>{
-      //creates what goes into the assignment storage  
+        //console.log("   ", assignment.name);
       const assignmentInfo = {
         course: assignment.course_id,
-        assignment_id: assignment.id,
         name: assignment.name, // assignment name (ex exam 1, unit 3 quiz)
         category: group.name, //category name (ex exam, quiz, lab)
         dueDate: assignment.due_at, //due date=time
@@ -187,19 +187,6 @@ async function saveAllAssignments(){
       });
     });
   };
-
-  //after all assignments have been added to assignmentInfo list
-  for (const newAssignment of assignmentList) {
-    const oldAssignment = storedMap.get(newAssignment.assignment_id);
-    if (oldAssignment && oldAssignment.submissionState != newAssignment.submissionState) {
-      pointTotal ++; // add logic to check the dates
-      newlyCompleted.push(newAssignment); //delete later
-    }
-  }
-
-  let oldPoints = await chrome.storage.local.get("points");
-  oldPoints = oldPoints.points;
-  chrome.storage.local.set({points: (oldPoints + pointTotal)});
 
   chrome.storage.local.set({assignments: {assignmentWeights, assignmentList}}); //may not need this??
   console.log("stored weights", assignmentWeights);//debugging
